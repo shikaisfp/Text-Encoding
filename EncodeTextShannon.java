@@ -5,7 +5,7 @@ import java.util.Scanner;
 import java.util.Random;
 
 
-public class Part2 {
+public class EncodeTextShannon {
 
 
 	public static Object[] doSelectionSort(char[] alphabet, double[] alphabetProbability, int[] counters){
