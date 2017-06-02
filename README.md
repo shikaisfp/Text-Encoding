@@ -4,7 +4,7 @@ Encode any text with Shannon-Fano algorithm.
 Consists of several parts
 part1:
 Input: “Text.txt” file (English text). Goal: C++ (or another) program finds all symbols (not only letters) in this text and computes their probabilities. Outpit: list of all unique symbols from the text with their probabilities.
-part2:
+<br/>part2:
 Input: “Text.txt” file and the result from Part 1. Goal: Encode the text from the “Text.txt” file using Shannon-Fano or Huffman algorithm with probabilities from Part 1. Output: a sequence of binary digits. 
 part3:
 Input: a sequence of binary digits from Part 2. Goal: Decode back into text the result  binary sequence after Part2 (using ShannonFano code). Output: a text identical to an initial text from “Text.txt” file.
