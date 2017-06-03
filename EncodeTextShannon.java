@@ -7,36 +7,42 @@ import java.util.Random;
 
 public class EncodeTextShannon {
 
-
+	//Sort arrays in ascending order using Selection sort/prepare to encode them by Shannon-Fano algorithm
 	public static Object[] doSelectionSort(char[] alphabet, double[] alphabetProbability, int[] counters){
-        
-        for (int i = 0; i < alphabetProbability.length - 1; i++)
-        {
-            int index = i;
-            for (int j = i + 1; j < alphabetProbability.length; j++)
-                if (alphabetProbability[j] < alphabetProbability[index])
-                    index = j;
-      
-            double smallerNumber = alphabetProbability[index]; 
-            alphabetProbability[index] = alphabetProbability[i];
-            alphabetProbability[i] = smallerNumber;
-            
-            char change = alphabet[index];
-            alphabet[index] = alphabet[i];
-            alphabet[i] = change;
-            
-            int temp = counters[index];
-            counters[index] = counters[i];
-            counters[i] = temp;
-            
-        }
-        return new Object[]{alphabet, alphabetProbability, counters};
-    }
+		
+		for (int i = 0; i < alphabetProbability.length - 1; i++)
+		{
+			/* sort 'alphabetProbability' array then use same indexes to other arrays
+			*  because element of a probability array corresponds to the element of alphabet array
+			*  the same with counters array
+			*/
+			int index = i;
+			for (int j = i + 1; j < alphabetProbability.length; j++)
+				if (alphabetProbability[j] < alphabetProbability[index])
+					index = j;
+
+			double smallerNumber = alphabetProbability[index]; 
+			alphabetProbability[index] = alphabetProbability[i];
+			alphabetProbability[i] = smallerNumber;
+
+			char change = alphabet[index];
+			alphabet[index] = alphabet[i];
+			alphabet[i] = change;
+
+			int temp = counters[index];
+			counters[index] = counters[i];
+			counters[i] = temp;
+
+		}
+		//return Object containing three updated arrays
+		return new Object[]{alphabet, alphabetProbability, counters};
+    	}
 	
+	//If there is no letters in the text we don't need to encode them, so delete all elements with zero probability
 	public static Object[] deleteExtra( char[] sortedAlphabet, double[] sortedProbability, int[] sortedCounters){
 		int j = 0,
 			count = 0;
-		
+		//create copies of arrays with new sizes, because when unnecessary elements deleted arrays shrink in size
 		for( int i = 0;  i < sortedProbability.length;  i++ )
 		{
 		    if (sortedProbability[i] != 0){
@@ -44,11 +50,11 @@ public class EncodeTextShannon {
 		    }
 		}
 		
-		
 		char[] newAlphabet = new char[count];
 		double[] newProbability = new double[count];
 		int[] newCounters = new int[count];
-		
+		//if an element has non-zero probability add it to new array
+		//same as sorting, all array will have same indexes changed
 		for( int i = 0;  i < sortedProbability.length;  i++ )
 		{
 		    if (sortedProbability[i] != 0){
@@ -57,10 +63,11 @@ public class EncodeTextShannon {
 		    	newCounters[j++] = sortedCounters[i];
 		    }
 		}
-		
+		//return object of new arrays with non-zero probabilities
 		return new Object[]{newAlphabet, newProbability, newCounters};
 	}
 	
+	//chechArray is used to print current states of arrays, mostly used after updating arrays
 	public static void checkArray(char[] alphabet, double[] prob, String[] code){
 		System.out.println("\nCHECK sorted Array: ");	
 		for(int i = 0; i < alphabet.length; i++){
@@ -187,7 +194,9 @@ public class EncodeTextShannon {
 		return encodedText;
 	}
 	
+	//check error syndrome, at any case return index of a bit which has error
 	public static int checkErrorSyndrome(String errorSyndrome){
+		//if errorBit is 9, then there is no error
 		int errorBit = 9;
 		switch(errorSyndrome){
 			case "000":	errorBit = 9;
@@ -204,7 +213,7 @@ public class EncodeTextShannon {
 						break;
 			case "110":	errorBit = 2;
 						break;
-			case "111": errorBit = 1;
+			case "111": 	errorBit = 1;
 						break;
 		}
 		return errorBit;
@@ -221,25 +230,26 @@ public class EncodeTextShannon {
 					r1 = binaryToBool(codeBlock.charAt(4)),	
 					r2 = binaryToBool(codeBlock.charAt(5)),
 					r3 = binaryToBool(codeBlock.charAt(6));
-			
+			//calculate error syndrome using formulas for s1,s2,s3. ^ - XOR
 			String  s1 = boolToBinary(r1 ^ i1 ^ i2 ^ i3),
 					s2 = boolToBinary(r2 ^ i2 ^ i3 ^ i4),
 					s3 = boolToBinary(r3 ^ i1 ^ i2 ^ i4);
 			
 			String errorSyndrome = s1 + s2 + s3;
+			//use function checkErrorSyndrome to..well, check error syndrome
 			int index = checkErrorSyndrome(errorSyndrome);
-			
+			//use changeBit to change bit at given index in codeBlock
 			StringBuilder codeBlocke = new StringBuilder(codeBlock);
-			
 			codeBlocke.setCharAt(index, changeBit(codeBlock.charAt(index)));
 			//System.out.print("\n" + codeBlocke.toString());
 			codeWithErrors[i] = codeBlocke.toString();
 			
 		}
-		
+		//return new String array of codes with errors
 		return codeWithErrors;
 	}
-
+	
+	//we need parity bits when working with errors, we don't need them during calculations
 	public static String[] deleteParity(String[] code){
 		String[] newCode = new String[code.length];
 		
